@@ -40,10 +40,10 @@ class Utils():
     hostName = socket.gethostname()
     ipaddr = socket.gethostbyname(hostName)
     self.Logger.Info("now ip: " + ipaddr)
-    if ipaddr == '10.246.104.17':
-      self.cfg.read("./config.cfg")
-    else:
-      self.cfg.read("./config_online.cfg")
+    # if ipaddr == '10.246.104.17':
+    #   self.cfg.read("./config.cfg")
+    # else:
+    self.cfg.read("./config_online.cfg")
     return self.cfg
   
   def checkIpForAJK(self,ip):
