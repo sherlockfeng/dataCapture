@@ -71,8 +71,8 @@ class ipProxy():
 		# sql_select = "SELECT * FROM " + self.cfg.get("DB", "DBNAME") +".ipProxy"
 		sql_update = "UPDATE " + self.cfg.get("DB", "DBNAME") + ".ipProxy SET power = (%s), update_time = (%s)"
 		sql_insert = "INSERT INTO " + self.cfg.get("DB", "DBNAME") + ".ipProxy (ip, power, time, source, create_time, update_time)"
-		sql_select = "SELECT * FROM " + self.cfg.get("DB", "DBNAME") +".ipProxy WHERE ip = (%s) LIMIT 1"
-		hasOne = self.mysql.getOne(sql_select, (u'168.197.115.163:51088'))
+		sql_select = "SELECT * FROM " + self.cfg.get("DB", "DBNAME") +".houseConfig LIMIT 1"
+		hasOne = self.mysql.getOne(sql_select)
 		print(hasOne)
 
 	def get_ip_from_ip3366(self):
@@ -105,4 +105,5 @@ if __name__ == '__main__':
 	ipProxys = ipProxy()
 	# ipProxys.get_ips()
 	# ipProxys.get_ip_from_ip3366()
-	ipProxys.change_name()
+	# ipProxys.change_name()
+	ipProxys.insert_data()

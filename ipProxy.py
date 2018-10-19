@@ -32,7 +32,7 @@ class ipProxy():
 		self.mysql = Mysql(self.cfg.get('DB', 'DBHOST'), int(self.cfg.get('DB', 'DBPORT')), self.cfg.get('DB', 'DBUSER'), self.cfg.get('DB', 'DBPWD'), 3, 5)
 	
 	def get_ip_from_xici(self):
-		avalibleIpsXici = []
+		avalibleIpsOneWeb = []
 		startGetIpTime = time.time()
 		startGetIpTimeFormat = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
 		title = u'西祠代理'
@@ -61,7 +61,7 @@ class ipProxy():
 			start = time.time()
 			if self.utils.checkIpForAJK(ip):
 				end = time.time()
-				avalibleIpsXici.append({
+				avalibleIpsOneWeb.append({
 					'source': 'xici',
 					'ip': ip,
 					'time':str(end - start)
@@ -69,17 +69,18 @@ class ipProxy():
 		endCheckIpTime = time.time()
 		endCheckIpTimeFormat = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
 		self.Logger.Info('>>>>> ' + endCheckIpTimeFormat + '|' + title + u'|结束检查ip是否可用,检查共耗时' + str(endCheckIpTime - endGetIpTime) + ' <<<<<')
-		self.Logger.Info('>>>>> ' + endCheckIpTimeFormat + '|' + title + u'|结束,抓取到' + str(len(avalibleIpsXici)) + '条可用ip,共耗时' + str(endCheckIpTime - startGetIpTime) + ' <<<<<')
-		self.avalibleIps.append(avalibleIpsXici)
+		self.Logger.Info('>>>>> ' + title + u'|成功率:' + str(len(avalibleIpsOneWeb)) + '-' +str(len(self.ips)) + ' <<<<<')
+		self.Logger.Info('>>>>> ' + endCheckIpTimeFormat + '|' + title + u'|结束,抓取到' + str(len(avalibleIpsOneWeb)) + '条可用ip,共耗时' + str(endCheckIpTime - startGetIpTime) + ' <<<<<')
+		self.avalibleIps.append(avalibleIpsOneWeb)
 	
 	def get_ip_from_ip3366(self):
-		avalibleIps3366 = []
+		avalibleIpsOneWeb = []
 		startGetIpTime = time.time()
 		startGetIpTimeFormat = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
 		title = u'云代理'
 		self.Logger.Info('>>>>> ' + startGetIpTimeFormat + '|' + title + u'|开始抓取ip <<<<<')
-		# url = ['http://www.ip3366.net/free/','http://www.ip3366.net/free/?stype=1&page=2']
-		url = ['http://www.ip3366.net/free/']
+		url = ['http://www.ip3366.net/free/','http://www.ip3366.net/free/?stype=1&page=2']
+		# url = ['http://www.ip3366.net/free/']
 		head = self.headers
 		head['user-agent'] = random.choice(self.user_agents)
 		self.ips = []
@@ -104,7 +105,7 @@ class ipProxy():
 			start = time.time()
 			if self.utils.checkIpForAJK(ip):
 				end = time.time()
-				avalibleIps3366.append({
+				avalibleIpsOneWeb.append({
 					'source': 'IP366',
 					'ip': ip,
 					'time':str(end - start)
@@ -112,11 +113,12 @@ class ipProxy():
 		endCheckIpTime = time.time()
 		endCheckIpTimeFormat = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
 		self.Logger.Info('>>>>> ' + endCheckIpTimeFormat + '|' + title + u'|结束检查ip是否可用,检查共耗时' + str(endCheckIpTime - endGetIpTime) + ' <<<<<')
-		self.Logger.Info('>>>>> ' + endCheckIpTimeFormat + '|' + title + u'|结束,抓取到' + str(len(avalibleIps3366)) + '条可用ip,共耗时' + str(endCheckIpTime - startGetIpTime) + ' <<<<<')
-		self.avalibleIps.append(avalibleIps3366)
+		self.Logger.Info('>>>>> ' + title + u'|成功率:' + str(len(avalibleIpsOneWeb)) + '-' +str(len(self.ips)) + ' <<<<<')
+		self.Logger.Info('>>>>> ' + endCheckIpTimeFormat + '|' + title + u'|结束,抓取到' + str(len(avalibleIpsOneWeb)) + '条可用ip,共耗时' + str(endCheckIpTime - startGetIpTime) + ' <<<<<')
+		self.avalibleIps.append(avalibleIpsOneWeb)
 
 	def get_ip_from_66ip(self):
-		avalibleIps66ip = []
+		avalibleIpsOneWeb = []
 		startGetIpTime = time.time()
 		title = u'安小莫'
 		startGetIpTimeFormat = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
@@ -140,7 +142,7 @@ class ipProxy():
 			start = time.time()
 			if self.utils.checkIpForAJK(ip):
 				end = time.time()
-				avalibleIps66ip.append({
+				avalibleIpsOneWeb.append({
 					'source': '66ip',
 					'ip': ip,
 					'time':str(end - start)
@@ -148,8 +150,9 @@ class ipProxy():
 		endCheckIpTime = time.time()
 		endCheckIpTimeFormat = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
 		self.Logger.Info('>>>>> ' + endCheckIpTimeFormat + '|' + title + u'|结束检查ip是否可用,检查共耗时' + str(endCheckIpTime - endGetIpTime) + ' <<<<<')
-		self.Logger.Info('>>>>> ' + endCheckIpTimeFormat + '|' + title + u'|结束,抓取到' + str(len(avalibleIps66ip)) + '条可用ip,共耗时' + str(endCheckIpTime - startGetIpTime) + ' <<<<<')
-		self.avalibleIps.append(avalibleIps66ip)
+		self.Logger.Info('>>>>> ' + title + u'|成功率:' + str(len(avalibleIpsOneWeb)) + '-' +str(len(self.ips)) + ' <<<<<')
+		self.Logger.Info('>>>>> ' + endCheckIpTimeFormat + '|' + title + u'|结束,抓取到' + str(len(avalibleIpsOneWeb)) + '条可用ip,共耗时' + str(endCheckIpTime - startGetIpTime) + ' <<<<<')
+		self.avalibleIps.append(avalibleIpsOneWeb)
 		
 	def insert_data(self):
 		cur_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -172,7 +175,7 @@ class ipProxy():
 						self.mysql.insertOne(sql_insert, (item['ip'], '1', item['time'], item['source'], cur_time, cur_time))
 		except BaseException, e:
 			self.Logger.Error('>>>>> insert_data' + u' 出错' + e.message + '<<<<<')
-		self.Logger.Info('>>>>> 插入数据结束 <<<<<')
+		self.Logger.Info(u'>>>>> 插入数据结束 <<<<<')
 		self.mysql.end()
 	
 	def check_db_ip(self):
@@ -200,13 +203,13 @@ class ipProxy():
 		self.Logger.Info(u'>>>>> ================== 开始抓取ip ==================<<<<<')
 		self.avalibleIps = []
 		self.check_db_ip()
-		# self.get_ip_from_66ip()
+		self.get_ip_from_66ip()
 		# print(self.avalibleIps)
 		self.get_ip_from_ip3366()
-		# self.get_ip_from_xici()
+		self.get_ip_from_xici()
 		# print(self.avalibleIps)
 		self.insert_data()
-		self.Logger.Info('>>>>> 可用ip:' + str(self.avalibleIps) + '<<<<<')
+		self.Logger.Info(u'>>>>> 可用ip:' + str(self.avalibleIps) + '<<<<<')
 		self.Logger.Info(u'>>>>> ================== 抓取ip结束 ================== <<<<<')
 
 
