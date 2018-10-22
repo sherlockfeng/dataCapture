@@ -189,8 +189,10 @@ class ipProxy():
 			if ipsFromDb:
 				for item in ipsFromDb:
 					if self.utils.checkIpForAJK(item['ip']):
-						self.Logger.Info(u'>>>>>更新ip:' + item['ip'] + '<<<<<')
-						self.mysql.update(sql_update, (str(int(item['power']) + 1), cur_time))
+						power = int(item['power'])
+						powerNew = power + 1
+						self.Logger.Info(u'>>>>>更新ip:' + item['ip'] + 'power从：' + str(power) + '更新至' str(powerNew)+ '<<<<<')
+						self.mysql.update(sql_update, (str(powerNew), cur_time))
 					else:
 						self.Logger.Info(u'>>>>>删除ip:' + item['ip'] + '<<<<<')
 						self.mysql.delete(sql_delete, (item['ip']))
