@@ -1,4 +1,4 @@
 *.cfg
-*.log
+*.log*
 *.pyc
 .vscode

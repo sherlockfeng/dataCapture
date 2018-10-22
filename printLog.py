@@ -1,5 +1,6 @@
 # -*- coding: utf8 -*-
 import os,logging
+import logging.config
 import ConfigParser
 from datetime import datetime,date,timedelta
 
@@ -19,6 +20,7 @@ class Logger:
         # CRITICAL > ERROR > WARNING > INFO > DEBUG > NOTSET
         self.logger.setLevel(LOG_LEVEL.upper())
 
+
         if special_log_file is None:
             file_name = SERVICE_NAME
         else:
@@ -31,16 +33,20 @@ class Logger:
 
         if not self.logger.handlers:
             # 创建一个handler，用于写入日志文件
-            fh = logging.FileHandler(log_full_file_path)
+            fh = logging.handlers.TimedRotatingFileHandler(log_full_file_path,'M')
+
             # 定义handler的输出格式formatter
             formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
             fh.setFormatter(formatter)
+            # fh.handlers.TimedRotatingFileHandler(log_full_file_path,'M',1,0)
+            # fh.suffix = "%Y%m%d-%H%M.log"
             #定义一个filter
             #filter = logging.Filter('mylogger.child1.child2')
             #fh.addFilter(filter)
             # 给logger添加handler
             #logger.addFilter(filter)
             self.logger.addHandler(fh)
+            
 
             if RUN_TYPE.upper() == 'DEV':
                 # 再创建一个handler，用于输出到控制台    

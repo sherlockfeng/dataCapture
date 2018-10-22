@@ -162,7 +162,7 @@ class ipProxy():
 			length += len(l)
 		self.Logger.Info('>>>>> ' + cur_time + u'|开始插入数据, 共爬取' + str(len(self.avalibleIps))+'个网站,共抓取' + str(length) + '个可用ip<<<<<')
 		sql_select = "SELECT * FROM " + self.cfg.get("DB", "DBNAME") +".ipProxy WHERE ip = (%s) LIMIT 1"
-		sql_update = "UPDATE " + self.cfg.get("DB", "DBNAME") + ".ipProxy SET power = (%s), update_time = (%s)"
+		sql_update = "UPDATE " + self.cfg.get("DB", "DBNAME") + ".ipProxy SET power = (%s), update_time = (%s) WHERE ip = (%s)"
 		sql_insert = "INSERT INTO " + self.cfg.get("DB", "DBNAME") + ".ipProxy (ip, power, time, source, create_time, update_time)"
 		sql_insert += "VALUES (%s, %s, %s, %s, %s, %s)"
 		try:
@@ -170,7 +170,8 @@ class ipProxy():
 				for item in items:
 					hasOne = self.mysql.getOne(sql_select, item['ip'])
 					if hasOne:
-						self.mysql.update(sql_update, (str(int(hasOne['power']) + 1), cur_time))
+						self.mysql.update(sql_update, (str(int(hasOne['power']) + 1), cur_time, item['ip']))
+						self.Logger.Info(u'>>>>>更新ip:' + item['ip'] + '-power从' + str(hasOne['power']) + '更新至' + str(int(hasOne['power']) + 1)+ '<<<<<')
 					else:
 						self.mysql.insertOne(sql_insert, (item['ip'], '1', item['time'], item['source'], cur_time, cur_time))
 		except BaseException, e:
@@ -181,7 +182,7 @@ class ipProxy():
 	def check_db_ip(self):
 		self.Logger.Info(u'>>>>>开始检查数据库中已有ip<<<<<')
 		sql_select = "SELECT * FROM " + self.cfg.get("DB", "DBNAME") +".ipProxy"
-		sql_update = "UPDATE " + self.cfg.get("DB", "DBNAME") + ".ipProxy SET power = (%s), update_time = (%s)"
+		sql_update = "UPDATE " + self.cfg.get("DB", "DBNAME") + ".ipProxy SET power = (%s), update_time = (%s) WHERE ip = (%s)"
 		sql_delete = "DELETE FROM " + self.cfg.get("DB", "DBNAME") + ".ipProxy WHERE ip = (%s)"
 		cur_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 		try:
@@ -191,8 +192,8 @@ class ipProxy():
 					if self.utils.checkIpForAJK(item['ip']):
 						power = int(item['power'])
 						powerNew = power + 1
-						self.Logger.Info(u'>>>>>更新ip:' + item['ip'] + 'power从：' + str(power) + '更新至' str(powerNew)+ '<<<<<')
-						self.mysql.update(sql_update, (str(powerNew), cur_time))
+						self.Logger.Info(u'>>>>>更新ip:' + item['ip'] + '-power从' + str(power) + '更新至' + str(powerNew)+ '<<<<<')
+						self.mysql.update(sql_update, (str(powerNew), cur_time, item['ip']))
 					else:
 						self.Logger.Info(u'>>>>>删除ip:' + item['ip'] + '<<<<<')
 						self.mysql.delete(sql_delete, (item['ip']))
