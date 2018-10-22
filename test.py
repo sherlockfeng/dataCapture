@@ -67,13 +67,12 @@ class ipProxy():
 			print(str(e))
 
 	def insert_data(self):
-		cur_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-		# sql_select = "SELECT * FROM " + self.cfg.get("DB", "DBNAME") +".ipProxy"
-		sql_update = "UPDATE " + self.cfg.get("DB", "DBNAME") + ".ipProxy SET power = (%s), update_time = (%s)"
-		sql_insert = "INSERT INTO " + self.cfg.get("DB", "DBNAME") + ".ipProxy (ip, power, time, source, create_time, update_time)"
-		sql_select = "SELECT * FROM " + self.cfg.get("DB", "DBNAME") +".houseConfig LIMIT 1"
-		hasOne = self.mysql.getOne(sql_select)
-		print(hasOne)
+		cur_time = time.time()
+		value = ('027', 'ajk', '\xe6\xad\xa6\xe6\xb1\x89', u'A1424781569', u'\u4e8c\u73af\u5185 \u540d\u6d41\u5370\u8c61 \u4f4e\u603b\u4ef7 \u4f4e\u5355\u4ef7\u671d\u5357\u5c0f\u4e09\u623f', u'127\u4e07', u'14127 \u5143/m\xb2', u'3\u5ba4\n\t\t\t\t2\u5385\n\t\t\t\t1\u536b', u'\u4f4e\u5c42(\u517133\u5c42)', u'2017\u5e74', u'\u6c49\u9633\uff0d\n\t\t\t\t\t\t\u5efa\u6e2f\uff0d\n\t\t\t\t\t\t\u6c5f\u5824\u4e2d\u8def\n\ue003', u'\u540d\u6d41\u5370\u8c61', u'89.9\u5e73\u65b9\u7c73', u'\u5357', u'\u6bdb\u576f', u'\u6709', u'\u5546\u54c1\u623f', u'70\u5e74', u'38.10\u4e07', u'', u'https://wuhan.anjuke.com/prop/view/A1424781569', '2018-10-22 18:01:17', '2018-10-22 18:01:17')
+		sql_insert = "INSERT INTO " + self.cfg.get("DB", "DBNAME") +".houseSecOuterData (city_id,source,city_name,house_id,title,price,uni_price,house_type,house_floor,build_time,address,community,floor_area,face_to,decoration,elevator,property_type,property_year,down_payments,monthly_supply,link_url,create_time,update_time)"
+		sql_insert += " VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+		self.mysql.insertOne(sql_insert, value)
+		self.mysql.end()
 
 	def get_ip_from_ip3366(self):
 

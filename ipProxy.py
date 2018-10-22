@@ -25,7 +25,7 @@ class ipProxy():
 	avalibleIps = []
 
 	def __init__(self):
-		self.Logger = Logger()
+		self.Logger = Logger(special_log_file = 'getProxy')
 		self.user_agents = Headers().user_agents
 		self.headers = Headers().headers
 		self.cfg = self.utils.pathToConfig()

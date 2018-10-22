@@ -11,7 +11,6 @@
 # Copyright:   (c) heyunfeng 2018
 # Licence:     <MIT>
 #-------------------------------------------------------------------------------
-from printLog import Logger
 import socket
 import ConfigParser,traceback
 import re
@@ -27,7 +26,6 @@ class Utils():
   headers = {}
 
   def __init__(self):
-    self.Logger = Logger()
     self.cfg = ConfigParser.ConfigParser()
     self.user_agents = Headers().user_agents
     self.headers = Headers().headers
@@ -39,11 +37,10 @@ class Utils():
     """
     hostName = socket.gethostname()
     ipaddr = socket.gethostbyname(hostName)
-    self.Logger.Info("now ip: " + ipaddr)
     # if ipaddr == '10.246.104.17':
     #   self.cfg.read("./config.cfg")
     # else:
-    self.cfg.read("./config_online.cfg")
+    self.cfg.read("./config.cfg")
     return self.cfg
   
   def checkIpForAJK(self,ip):
