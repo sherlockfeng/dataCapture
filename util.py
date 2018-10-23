@@ -44,7 +44,7 @@ class Utils():
     return self.cfg
   
   def checkIpForAJK(self,ip):
-    result = False
+    result = {}
     try:
       url = 'https://wuhan.anjuke.com/sale/?from=navigation'
       proxies = {'http': ip, 'https': ip}
@@ -55,7 +55,9 @@ class Utils():
       soup = BeautifulSoup(r.text, "html.parser")
       title = soup.find('title').get_text()
       if '武汉二手房' in title:
-        result = True
+        result = {"move": "add"}
+      else:
+        result = {"move": "minus"}
     except BaseException,e:
       print(e.message)
     time.sleep(random.random() * 10)

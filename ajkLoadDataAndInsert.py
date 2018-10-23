@@ -103,7 +103,7 @@ class ajkLoadDataAndInsert():
 									self.Logger.Info(u'>>>>> ip for detail:' + str(self.ip['ip']) + u'不可用,超时|' + str(e) + '<<<<<')
 									self.ip = self.get_active_ip()
 						oneCityGetDown = False
-						self.Logger.Info(u'>>>>> city:' + city['city_name'] + u'抓取完成<<<<<')
+						self.Logger.Info(u'>>>>> ========== city:' + city['city_name'] + u'抓取完成 ========== <<<<<')
 					else:
 						self.Logger.Info(u'>>>>> ip:' + str(self.ip['ip']) + u'不可用|' + title + '<<<<<')
 						self.ip = self.get_active_ip()
@@ -207,11 +207,11 @@ class ajkLoadDataAndInsert():
 		sql_insert += " VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
 		cur_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 		sql_select = "SELECT * FROM " + self.cfg.get("DB", "DBNAME") +".houseSecOuterData WHERE house_id = (%s) ORDER BY id DESC"
-		sql_update = "UPDATE " + self.cfg.get("DB", "DBNAME") + ".houseSecOuterData SET title = (%s), price = (%s), uni_price = (%s),house_type = (%s), house_floor = (%s), build_time = (%s), address = (%s), community = (%s), floor_area = (%s), face_to = (%s), decoration = (%s), elevator = (%s), property_type = (%s), property_year = (%s), down_payments = (%s), monthly_supply = (%s), link_url = (%s), describes = (%s), update_time = (%s)"
+		sql_update = "UPDATE " + self.cfg.get("DB", "DBNAME") + ".houseSecOuterData SET title = (%s), price = (%s), uni_price = (%s),house_type = (%s), house_floor = (%s), build_time = (%s), address = (%s), community = (%s), floor_area = (%s), face_to = (%s), decoration = (%s), elevator = (%s), property_type = (%s), property_year = (%s), down_payments = (%s), monthly_supply = (%s), link_url = (%s), describes = (%s), update_time = (%s) WHERE house_id = (%s)"
 		try:
 			if self.mysql.getOne(sql_select, detail_dict['house_id']):
 				self.Logger.Info(u'>>>>> 查询到|已有|' + detail_dict['city_name'] + '|' + detail_dict['title'] + '|' + detail_dict['house_id'] + '<<<<<')
-				value = (detail_dict['title'], detail_dict['price'], detail_dict['uni_price'], detail_dict['house_type'], detail_dict['house_floor'], detail_dict['build_time'], detail_dict['address'], detail_dict['community'], detail_dict['floor_area'], detail_dict['face_to'], detail_dict['decoration'], detail_dict['elevator'], detail_dict['property_type'], detail_dict['property_year'], detail_dict['down_payments'], detail_dict['monthly_supply'], detail_dict['link_url'], detail_dict['describes'], cur_time)
+				value = (detail_dict['title'], detail_dict['price'], detail_dict['uni_price'], detail_dict['house_type'], detail_dict['house_floor'], detail_dict['build_time'], detail_dict['address'], detail_dict['community'], detail_dict['floor_area'], detail_dict['face_to'], detail_dict['decoration'], detail_dict['elevator'], detail_dict['property_type'], detail_dict['property_year'], detail_dict['down_payments'], detail_dict['monthly_supply'], detail_dict['link_url'], detail_dict['describes'], cur_time, detail_dict['house_id'])
 				self.mysql.update(sql_update, value)
 				self.Logger.Info(u'>>>>> 更新' + detail_dict['city_name'] + '|' + detail_dict['title'] + '|' + detail_dict['house_id'] + '成功<<<<<') 
 			else:
@@ -238,6 +238,7 @@ class ajkLoadDataAndInsert():
 			self.get_city_sec_url()
 			self.get_ips()
 			self.load_detail_info_sec()
+			self.Logger.Info(u'>>>>> =============== 抓取数据完成 =============== <<<<<')
 		except Exception,e:
 			self.Logger.Error(u'>>>>> load_data_ajk main [Error] :' + str(e))
 		
@@ -247,6 +248,7 @@ class ajkLoadDataAndInsert():
 if __name__ == '__main__':
 	loadData = ajkLoadDataAndInsert()
 	schedule.every().day.at('08:00').do(loadData.start)
+	schedule.every().day.at('16:00').do(loadData.start)
 	while 1 == 1:
 		schedule.run_pending()
 		time.sleep(1)
