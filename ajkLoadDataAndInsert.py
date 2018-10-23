@@ -192,7 +192,7 @@ class ajkLoadDataAndInsert():
 			if soup.find_all('div', attrs={'class':'houseInfo-item-desc'}):
 				detail_describe = soup.find_all('div', attrs={'class':'houseInfo-item-desc'})
 				self.Logger.Info('detail_describe')
-				# self.Logger.Info(detail_describe)
+				self.Logger.Info(detail_describe)
 				ser_l = detail_describe[0].get_text().strip() + '|' + detail_describe[1].get_text().strip() + '|' + detail_describe[2].get_text().strip()
 				detail_dict['describes'] = ser_l
 
