@@ -233,14 +233,13 @@ class ipProxy():
 if __name__ == '__main__':
 	ipProxys = ipProxy()
 	try:
-		# get_ip_from_66ip = threading.Thread(target=ipProxys.get_ip_from_66ip)
-		# get_ip_from_ip3366 = threading.Thread(target=ipProxys.get_ip_from_ip3366)
-		# get_ip_from_xici = threading.Thread(target=ipProxys.get_ip_from_xici)
-		# check_ip_schedule = threading.Thread(target=ipProxys.check_ip_schedule)
-		# get_ip_from_66ip.start()
-		# get_ip_from_ip3366.start()
-		# get_ip_from_xici.start()
-		# check_ip_schedule.start()
-		ipProxys.check_db_ip()
+		get_ip_from_66ip = threading.Thread(target=ipProxys.get_ip_from_66ip)
+		get_ip_from_ip3366 = threading.Thread(target=ipProxys.get_ip_from_ip3366)
+		get_ip_from_xici = threading.Thread(target=ipProxys.get_ip_from_xici)
+		check_ip_schedule = threading.Thread(target=ipProxys.check_ip_schedule)
+		get_ip_from_66ip.start()
+		get_ip_from_ip3366.start()
+		get_ip_from_xici.start()
+		check_ip_schedule.start()
 	except Exception,e:
 		ipProxys.Loggers.Error("ipProxy [ERROR] :" + str(e))
