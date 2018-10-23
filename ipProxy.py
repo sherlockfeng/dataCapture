@@ -224,7 +224,7 @@ class ipProxy():
 		self.mysql.end()
 
 	def check_ip_schedule(self):
-		schedule.every(45).minutes.do(self.check_db_ip)
+		schedule.every(20).minutes.do(self.check_db_ip)
 		while 1 == 1:
 			schedule.run_pending()
 			time.sleep(1)
