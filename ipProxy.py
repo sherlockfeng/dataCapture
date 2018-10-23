@@ -142,11 +142,10 @@ class ipProxy():
 			head = self.headers
 			head['user-agent'] = random.choice(self.user_agents)
 			iplist = []
-			for i in range(0, 2):
-				r = requests.get(url, headers=head)
-				r.encoding = 'gb2312'
-				p = r'(?:((?:\d|[1-9]\d|1\d{2}|2[0-5][0-5])\.(?:\d|[1-9]\d|1\d{2}|2[0-5][0-5])\.(?:\d|[1-9]\d|1\d{2}|2[0-5][0-5])\.(?:\d|[1-9]\d|1\d{2}|2[0-5][0-5]))\D+?(6[0-5]{2}[0-3][0-5]|[1-5]\d{4}|[1-9]\d{1,3}|[0-9]))'
-				iplist = iplist + re.findall(p,r.text)
+			r = requests.get(url, headers=head)
+			r.encoding = 'gb2312'
+			p = r'(?:((?:\d|[1-9]\d|1\d{2}|2[0-5][0-5])\.(?:\d|[1-9]\d|1\d{2}|2[0-5][0-5])\.(?:\d|[1-9]\d|1\d{2}|2[0-5][0-5])\.(?:\d|[1-9]\d|1\d{2}|2[0-5][0-5]))\D+?(6[0-5]{2}[0-3][0-5]|[1-5]\d{4}|[1-9]\d{1,3}|[0-9]))'
+			iplist = re.findall(p,r.text)
 			ips = []
 			for item in iplist:
 				ips.append(item[0] + ':' + item[1])
@@ -189,7 +188,7 @@ class ipProxy():
 					Loggers.Info(u'>>>>>更新ip:' + item['ip'] + u'-power从' + str(hasOne['power']) + u'更新至' + str(int(hasOne['power']) + 1)+ '<<<<<')
 				else:
 					self.mysql.insertOne(sql_insert, (item['ip'], '1', item['time'], item['source'], cur_time, cur_time))
-					Loggers.Info(u'>>>>>插入ip:' + item['ip'] + '<<<<<')
+					Loggers.Info(u'>>>>> 插入ip:' + item['ip'] + '<<<<<')
 		except BaseException, e:
 			Loggers.Error('>>>>> insert_data' + u' 出错' + e.message + '<<<<<')
 		Loggers.Info(u'>>>>> 插入数据结束 <<<<<')
