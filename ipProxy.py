@@ -42,6 +42,7 @@ class ipProxy():
 				head = self.headers
 				head['user-agent'] = random.choice(self.user_agents)
 				try:
+					Loggers.Info('>>>>> ' + title + u'|开始请求url ' + url + ' <<<<<')
 					r = requests.get(url, timeout=10, headers=head)
 					soup = BeautifulSoup(r.text, "html.parser")
 					list = soup.find('table', attrs={'id': 'ip_list'}).find_all('td')
@@ -79,7 +80,8 @@ class ipProxy():
 					Loggers.Info('>>>>> ' + endCheckIpTimeFormat + '|' + title + u'|结束,抓取到' + str(len(avalibleIpsOneWeb)) + u'条可用ip,共耗时' + str(endCheckIpTime - startGetIpTime) + ' <<<<<')
 					# self.avalibleIps.append(avalibleIpsOneWeb)
 					self.insert_data(Loggers, avalibleIpsOneWeb)
-				Loggers.Error(u'>>>>> 请求url出错 ' + str(e) + '<<<<<')
+				except BaseException, e:
+					Loggers.Error(u'>>>>> 请求url出错 ' + str(e) + '<<<<<')
 			except BaseException, e:
 				Loggers.Error(u'>>>>> 抓取ip循环出错 ' + str(e) + '<<<<<')
 			time.sleep(10)
@@ -100,6 +102,7 @@ class ipProxy():
 				ips = []
 				for u in url:
 					try:
+						Loggers.Info('>>>>> ' + title + u'|开始请求url ' + u + ' <<<<<')
 						r = requests.get(u, timeout = 10, headers=head)
 						soup = BeautifulSoup(r.text, "html.parser")
 						list = soup.find('div', attrs={'id': 'list'}).find_all('td')
@@ -257,10 +260,7 @@ if __name__ == '__main__':
 		get_ip_from_66ip = threading.Thread(target=ipProxys.get_ip_from_66ip)
 		get_ip_from_ip3366 = threading.Thread(target=ipProxys.get_ip_from_ip3366)
 		get_ip_from_xici = threading.Thread(target=ipProxys.get_ip_from_xici)
-		check_ip_schedule = threading.Thread(target=ipProxys.check_ip_schedule)
-		get_ip_from_66ip.start()
-		get_ip_from_ip3366.start()
-		get_ip_from_xici.start()
-		check_ip_schedule.start([get_ip_from_66ip, get_ip_from_ip3366, get_ip_from_xici])
+		check_ip_schedule = threading.Thread(target=ipProxys.check_ip_schedule, args=([get_ip_from_66ip, get_ip_from_ip3366, get_ip_from_xici],))
+		check_ip_schedule.start()
 	except Exception,e:
 		ipProxys.Loggers.Error("ipProxy [ERROR] :" + str(e))
