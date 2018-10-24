@@ -51,7 +51,7 @@ class Utils():
       head = self.headers
       head['user-agent'] = random.choice(self.user_agents)
       print(ip + '====' + head['user-agent'] + '/n')
-      r = requests.get(url,  timeout = 10, proxies = proxies, headers=head)
+      r = requests.get(url, timeout = 10, proxies = proxies, headers=head)
       soup = BeautifulSoup(r.text, "html.parser")
       title = soup.find('title').get_text()
       if '武汉二手房' in title:

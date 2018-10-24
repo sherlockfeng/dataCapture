@@ -13,7 +13,6 @@ import random
 import time
 from dbPool import Mysql
 from headerConfig import Headers
-import schedule
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
@@ -33,145 +32,166 @@ class ipProxy():
 	def get_ip_from_xici(self):
 		Loggers = Logger(special_log_file = 'getProxyXiCi')
 		while 1 == 1:
-			avalibleIpsOneWeb = []
-			startGetIpTime = time.time()
-			startGetIpTimeFormat = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
-			title = u'西祠代理'
-			Loggers.Info('>>>>> ' + startGetIpTimeFormat + '|' + title + u'|开始抓取ip <<<<<')
-			url = 'http://www.xicidaili.com/nn/'
-			head = self.headers
-			head['user-agent'] = random.choice(self.user_agents)
-			r = requests.get(url, headers=head)
-			soup = BeautifulSoup(r.text, "html.parser")
-			list = soup.find('table', attrs={'id': 'ip_list'}).find_all('td')
-			strText = ''
-			ips = []
-			for l in list:
-				content = l.get_text().strip()
-				if re.match(r'^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$', content):
-					strText = content
-				if re.match(r'^([0-9]|[1-9]\d{1,3}|[1-5]\d{4}|6[0-4]\d{4}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])$', content):
-					strText = strText + ':' + content
-					ips.append(strText)
-			endGetIpTime = time.time()
-			endGetIpTimeFormat = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
-			Loggers.Info('>>>>> ' + endGetIpTimeFormat + '|' + title + u'|结束抓取ip,共抓取' + str(len(ips)) + '条 <<<<<')
-			Loggers.Info('>>>>> ' + endGetIpTimeFormat + '|' + title + u'|开始检查ip是否可用,抓取共耗时' + str(endGetIpTime - startGetIpTime) + ' <<<<<')
+			try:
+				avalibleIpsOneWeb = []
+				startGetIpTime = time.time()
+				startGetIpTimeFormat = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
+				title = u'西祠代理'
+				Loggers.Info('>>>>> ' + startGetIpTimeFormat + '|' + title + u'|开始抓取ip <<<<<')
+				url = 'http://www.xicidaili.com/nn/'
+				head = self.headers
+				head['user-agent'] = random.choice(self.user_agents)
+				try:
+					r = requests.get(url, timeout=10, headers=head)
+					soup = BeautifulSoup(r.text, "html.parser")
+					list = soup.find('table', attrs={'id': 'ip_list'}).find_all('td')
+					strText = ''
+					ips = []
+					for l in list:
+						content = l.get_text().strip()
+						if re.match(r'^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$', content):
+							strText = content
+						if re.match(r'^([0-9]|[1-9]\d{1,3}|[1-5]\d{4}|6[0-4]\d{4}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])$', content):
+							strText = strText + ':' + content
+							ips.append(strText)
+					endGetIpTime = time.time()
+					endGetIpTimeFormat = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
+					Loggers.Info('>>>>> ' + endGetIpTimeFormat + '|' + title + u'|结束抓取ip,共抓取' + str(len(ips)) + '条 <<<<<')
+					Loggers.Info('>>>>> ' + endGetIpTimeFormat + '|' + title + u'|开始检查ip是否可用,抓取共耗时' + str(endGetIpTime - startGetIpTime) + ' <<<<<')
 
-			for ip in ips:
-				Loggers.Info(u'>>>>> 开始检查ip:' + str(ip) + ' <<<<<')
-				start = time.time()
-				if self.utils.checkIpForAJK(ip):
-					end = time.time()
-					avalibleIpsOneWeb.append({
-						'source': 'xici',
-						'ip': ip,
-						'time':str(end - start)
-					})
-					Loggers.Info('>>>>> ip:' + str(ip) + u' 可用<<<<<')
-				else:
-					Loggers.Info('>>>>> ip:' + str(ip) + u' 不可用<<<<<')
-			endCheckIpTime = time.time()
-			endCheckIpTimeFormat = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
-			Loggers.Info('>>>>> ' + endCheckIpTimeFormat + '|' + title + u'|结束检查ip是否可用,检查共耗时' + str(endCheckIpTime - endGetIpTime) + ' <<<<<')
-			Loggers.Info('>>>>> ' + title + u'|成功率:' + str(len(avalibleIpsOneWeb)) + '-' +str(len(ips)) + ' <<<<<')
-			Loggers.Info('>>>>> ' + endCheckIpTimeFormat + '|' + title + u'|结束,抓取到' + str(len(avalibleIpsOneWeb)) + u'条可用ip,共耗时' + str(endCheckIpTime - startGetIpTime) + ' <<<<<')
-			# self.avalibleIps.append(avalibleIpsOneWeb)
-			self.insert_data(Loggers, avalibleIpsOneWeb)
+					for ip in ips:
+						Loggers.Info(u'>>>>> 开始检查ip:' + str(ip) + ' <<<<<')
+						start = time.time()
+						if self.utils.checkIpForAJK(ip):
+							end = time.time()
+							avalibleIpsOneWeb.append({
+								'source': 'xici',
+								'ip': ip,
+								'time':str(end - start)
+							})
+							Loggers.Info('>>>>> ip:' + str(ip) + u' 可用<<<<<')
+						else:
+							Loggers.Info('>>>>> ip:' + str(ip) + u' 不可用<<<<<')
+					endCheckIpTime = time.time()
+					endCheckIpTimeFormat = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
+					Loggers.Info('>>>>> ' + endCheckIpTimeFormat + '|' + title + u'|结束检查ip是否可用,检查共耗时' + str(endCheckIpTime - endGetIpTime) + ' <<<<<')
+					Loggers.Info('>>>>> ' + title + u'|成功率:' + str(len(avalibleIpsOneWeb)) + '-' +str(len(ips)) + ' <<<<<')
+					Loggers.Info('>>>>> ' + endCheckIpTimeFormat + '|' + title + u'|结束,抓取到' + str(len(avalibleIpsOneWeb)) + u'条可用ip,共耗时' + str(endCheckIpTime - startGetIpTime) + ' <<<<<')
+					# self.avalibleIps.append(avalibleIpsOneWeb)
+					self.insert_data(Loggers, avalibleIpsOneWeb)
+				Loggers.Error(u'>>>>> 请求url出错 ' + str(e) + '<<<<<')
+			except BaseException, e:
+				Loggers.Error(u'>>>>> 抓取ip循环出错 ' + str(e) + '<<<<<')
+			time.sleep(10)
 	
 	def get_ip_from_ip3366(self):
 		Loggers = Logger(special_log_file = 'getProxyIp336')
 		while 1 ==1:
-			avalibleIpsOneWeb = []
-			startGetIpTime = time.time()
-			startGetIpTimeFormat = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
-			title = u'云代理'
-			Loggers.Info('>>>>> ' + startGetIpTimeFormat + '|' + title + u'|开始抓取ip <<<<<')
-			url = ['http://www.ip3366.net/free/','http://www.ip3366.net/free/?stype=1&page=2']
-			# url = ['http://www.ip3366.net/free/']
-			head = self.headers
-			head['user-agent'] = random.choice(self.user_agents)
-			ips = []
-			for u in url:
-				r = requests.get(u, headers=head)
-				soup = BeautifulSoup(r.text, "html.parser")
-				list = soup.find('div', attrs={'id': 'list'}).find_all('td')
-				strText = ''
-				for l in list:
-					content = l.get_text().strip()
-					if re.match(r'^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$', content):
-						strText = content
-					if re.match(r'^([0-9]|[1-9]\d{1,3}|[1-5]\d{4}|6[0-4]\d{4}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])$', content):
-						strText = strText + ':' + content
-						ips.append(strText)
-			endGetIpTime = time.time()
-			endGetIpTimeFormat = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
-			Loggers.Info('>>>>> ' + endGetIpTimeFormat + '|' + title + u'|结束抓取ip,共抓取' + str(len(ips)) + '条 <<<<<')
-			Loggers.Info('>>>>> ' + endGetIpTimeFormat + '|' + title + u'|开始检查ip是否可用,抓取共耗时' + str(endGetIpTime - startGetIpTime) + ' <<<<<')
+			try:
+				avalibleIpsOneWeb = []
+				startGetIpTime = time.time()
+				startGetIpTimeFormat = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
+				title = u'云代理'
+				Loggers.Info('>>>>> ' + startGetIpTimeFormat + '|' + title + u'|开始抓取ip <<<<<')
+				url = ['http://www.ip3366.net/free/','http://www.ip3366.net/free/?stype=1&page=2']
+				# url = ['http://www.ip3366.net/free/']
+				head = self.headers
+				head['user-agent'] = random.choice(self.user_agents)
+				ips = []
+				for u in url:
+					try:
+						r = requests.get(u, timeout = 10, headers=head)
+						soup = BeautifulSoup(r.text, "html.parser")
+						list = soup.find('div', attrs={'id': 'list'}).find_all('td')
+						strText = ''
+						for l in list:
+							content = l.get_text().strip()
+							if re.match(r'^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$', content):
+								strText = content
+							if re.match(r'^([0-9]|[1-9]\d{1,3}|[1-5]\d{4}|6[0-4]\d{4}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])$', content):
+								strText = strText + ':' + content
+								ips.append(strText)
+					except BaseException, e:
+						Loggers.Error(u'>>>>> 请求url出错 ' + str(e) + '<<<<<')
+				endGetIpTime = time.time()
+				endGetIpTimeFormat = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
+				Loggers.Info('>>>>> ' + endGetIpTimeFormat + '|' + title + u'|结束抓取ip,共抓取' + str(len(ips)) + '条 <<<<<')
+				Loggers.Info('>>>>> ' + endGetIpTimeFormat + '|' + title + u'|开始检查ip是否可用,抓取共耗时' + str(endGetIpTime - startGetIpTime) + ' <<<<<')
 
-			for ip in ips:
-				start = time.time()
-				Loggers.Info(u'>>>>> 开始检查ip:' + str(ip) + ' <<<<<')
-				if self.utils.checkIpForAJK(ip):
-					end = time.time()
-					Loggers.Info('>>>>> ip:' + str(ip) + u' 可用<<<<<')
-					avalibleIpsOneWeb.append({
-						'source': 'IP366',
-						'ip': ip,
-						'time':str(end - start)
-					})
-				else:
-					Loggers.Info('>>>>> ip:' + str(ip) + u' 不可用<<<<<')
-			endCheckIpTime = time.time()
-			endCheckIpTimeFormat = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
-			Loggers.Info('>>>>> ' + endCheckIpTimeFormat + '|' + title + u'|结束检查ip是否可用,检查共耗时' + str(endCheckIpTime - endGetIpTime) + ' <<<<<')
-			Loggers.Info('>>>>> ' + title + u'|成功率:' + str(len(avalibleIpsOneWeb)) + '-' +str(len(ips)) + ' <<<<<')
-			Loggers.Info('>>>>> ' + endCheckIpTimeFormat + '|' + title + u'|结束,抓取到' + str(len(avalibleIpsOneWeb)) + u'条可用ip,共耗时' + str(endCheckIpTime - startGetIpTime) + ' <<<<<')
-			# self.avalibleIps.append(avalibleIpsOneWeb)
-			self.insert_data(Loggers, avalibleIpsOneWeb)
+				for ip in ips:
+					start = time.time()
+					Loggers.Info(u'>>>>> 开始检查ip:' + str(ip) + ' <<<<<')
+					if self.utils.checkIpForAJK(ip):
+						end = time.time()
+						Loggers.Info('>>>>> ip:' + str(ip) + u' 可用<<<<<')
+						avalibleIpsOneWeb.append({
+							'source': 'IP366',
+							'ip': ip,
+							'time':str(end - start)
+						})
+					else:
+						Loggers.Info('>>>>> ip:' + str(ip) + u' 不可用<<<<<')
+				endCheckIpTime = time.time()
+				endCheckIpTimeFormat = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
+				Loggers.Info('>>>>> ' + endCheckIpTimeFormat + '|' + title + u'|结束检查ip是否可用,检查共耗时' + str(endCheckIpTime - endGetIpTime) + ' <<<<<')
+				Loggers.Info('>>>>> ' + title + u'|成功率:' + str(len(avalibleIpsOneWeb)) + '-' +str(len(ips)) + ' <<<<<')
+				Loggers.Info('>>>>> ' + endCheckIpTimeFormat + '|' + title + u'|结束,抓取到' + str(len(avalibleIpsOneWeb)) + u'条可用ip,共耗时' + str(endCheckIpTime - startGetIpTime) + ' <<<<<')
+				# self.avalibleIps.append(avalibleIpsOneWeb)
+				self.insert_data(Loggers, avalibleIpsOneWeb)
+			except BaseException, e:
+				Loggers.Error(u'>>>>> 抓取ip循环出错 ' + str(e) + '<<<<<')
+			time.sleep(10)
 
 	def get_ip_from_66ip(self):
 		Loggers = Logger(special_log_file = 'getProxy66Ip')
 		while 1 == 1:
-			avalibleIpsOneWeb = []
-			startGetIpTime = time.time()
-			title = u'安小莫'
-			startGetIpTimeFormat = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
-			Loggers.Info('>>>>> ' + startGetIpTimeFormat + '|' + title + u'|开始抓取ip <<<<<')
-			url = 'http://www.66ip.cn/mo.php?sxb=&tqsl=100&port=&export=&ktip=&sxa=&submit=%CC%E1++%C8%A1&textarea=http%3A%2F%2Fwww.66ip.cn%2F%3Fsxb%3D%26tqsl%3D100%26ports%255B%255D2%3D%26ktip%3D%26sxa%3D%26radio%3Dradio%26submit%3D%25CC%25E1%2B%2B%25C8%25A1'
-			head = self.headers
-			head['user-agent'] = random.choice(self.user_agents)
-			iplist = []
-			r = requests.get(url, headers=head)
-			r.encoding = 'gb2312'
-			p = r'(?:((?:\d|[1-9]\d|1\d{2}|2[0-5][0-5])\.(?:\d|[1-9]\d|1\d{2}|2[0-5][0-5])\.(?:\d|[1-9]\d|1\d{2}|2[0-5][0-5])\.(?:\d|[1-9]\d|1\d{2}|2[0-5][0-5]))\D+?(6[0-5]{2}[0-3][0-5]|[1-5]\d{4}|[1-9]\d{1,3}|[0-9]))'
-			iplist = re.findall(p,r.text)
-			ips = []
-			for item in iplist:
-				ips.append(item[0] + ':' + item[1])
-			endGetIpTime = time.time()
-			endGetIpTimeFormat = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
-			Loggers.Info('>>>>> ' + endGetIpTimeFormat + '|' + title + u'|结束抓取ip,共抓取' + str(len(ips)) + '条 <<<<<')
-			Loggers.Info('>>>>> ' + endGetIpTimeFormat + '|' + title + u'|开始检查ip是否可用,抓取共耗时' + str(endGetIpTime - startGetIpTime) + ' <<<<<')
-			for ip in ips:
-				start = time.time()
-				Loggers.Info(u'>>>>> 开始检查ip:' + str(ip) + ' <<<<<')
-				if self.utils.checkIpForAJK(ip):
-					end = time.time()
-					avalibleIpsOneWeb.append({
-						'source': '66ip',
-						'ip': ip,
-						'time':str(end - start)
-					})
-					Loggers.Info('>>>>> ip:' + str(ip) + u' 可用<<<<<')
-				else:
-					Loggers.Info('>>>>> ip:' + str(ip) + u' 不可用<<<<<')
-			endCheckIpTime = time.time()
-			endCheckIpTimeFormat = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
-			Loggers.Info('>>>>> ' + endCheckIpTimeFormat + '|' + title + u'|结束检查ip是否可用,检查共耗时' + str(endCheckIpTime - endGetIpTime) + ' <<<<<')
-			Loggers.Info('>>>>> ' + title + u'|成功率:' + str(len(avalibleIpsOneWeb)) + '-' +str(len(ips)) + ' <<<<<')
-			Loggers.Info('>>>>> ' + endCheckIpTimeFormat + '|' + title + u'|结束,抓取到' + str(len(avalibleIpsOneWeb)) + u'条可用ip,共耗时' + str(endCheckIpTime - startGetIpTime) + ' <<<<<')
-			self.insert_data(Loggers, avalibleIpsOneWeb)
+			try:
+				avalibleIpsOneWeb = []
+				startGetIpTime = time.time()
+				title = u'安小莫'
+				startGetIpTimeFormat = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
+				Loggers.Info('>>>>> ' + startGetIpTimeFormat + '|' + title + u'|开始抓取ip <<<<<')
+				url = 'http://www.66ip.cn/mo.php?sxb=&tqsl=100&port=&export=&ktip=&sxa=&submit=%CC%E1++%C8%A1&textarea=http%3A%2F%2Fwww.66ip.cn%2F%3Fsxb%3D%26tqsl%3D100%26ports%255B%255D2%3D%26ktip%3D%26sxa%3D%26radio%3Dradio%26submit%3D%25CC%25E1%2B%2B%25C8%25A1'
+				head = self.headers
+				head['user-agent'] = random.choice(self.user_agents)
+				iplist = []
+				try:
+					Loggers.Info('>>>>> ' + title + u'|开始请求url ' + url + ' <<<<<')
+					r = requests.get(url, timeout = 10, headers=head)
+					r.encoding = 'gb2312'
+					p = r'(?:((?:\d|[1-9]\d|1\d{2}|2[0-5][0-5])\.(?:\d|[1-9]\d|1\d{2}|2[0-5][0-5])\.(?:\d|[1-9]\d|1\d{2}|2[0-5][0-5])\.(?:\d|[1-9]\d|1\d{2}|2[0-5][0-5]))\D+?(6[0-5]{2}[0-3][0-5]|[1-5]\d{4}|[1-9]\d{1,3}|[0-9]))'
+					iplist = re.findall(p,r.text)
+					ips = []
+					for item in iplist:
+						ips.append(item[0] + ':' + item[1])
+					endGetIpTime = time.time()
+					endGetIpTimeFormat = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
+					Loggers.Info('>>>>> ' + endGetIpTimeFormat + '|' + title + u'|结束抓取ip,共抓取' + str(len(ips)) + '条 <<<<<')
+					Loggers.Info('>>>>> ' + endGetIpTimeFormat + '|' + title + u'|开始检查ip是否可用,抓取共耗时' + str(endGetIpTime - startGetIpTime) + ' <<<<<')
+					for ip in ips:
+						start = time.time()
+						Loggers.Info(u'>>>>> 开始检查ip:' + str(ip) + ' <<<<<')
+						if self.utils.checkIpForAJK(ip):
+							end = time.time()
+							avalibleIpsOneWeb.append({
+								'source': '66ip',
+								'ip': ip,
+								'time':str(end - start)
+							})
+							Loggers.Info('>>>>> ip:' + str(ip) + u' 可用<<<<<')
+						else:
+							Loggers.Info('>>>>> ip:' + str(ip) + u' 不可用<<<<<')
+					endCheckIpTime = time.time()
+					endCheckIpTimeFormat = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
+					Loggers.Info('>>>>> ' + endCheckIpTimeFormat + '|' + title + u'|结束检查ip是否可用,检查共耗时' + str(endCheckIpTime - endGetIpTime) + ' <<<<<')
+					Loggers.Info('>>>>> ' + title + u'|成功率:' + str(len(avalibleIpsOneWeb)) + '-' +str(len(ips)) + ' <<<<<')
+					Loggers.Info('>>>>> ' + endCheckIpTimeFormat + '|' + title + u'|结束,抓取到' + str(len(avalibleIpsOneWeb)) + u'条可用ip,共耗时' + str(endCheckIpTime - startGetIpTime) + ' <<<<<')
+					self.insert_data(Loggers, avalibleIpsOneWeb)
+				except BaseException, e:
+					Loggers.Error(u'>>>>> 请求url出错 ' + str(e) + '<<<<<')
+			except BaseException, e:
+				Loggers.Error(u'>>>>> 抓取ip循环出错 ' + str(e) + '<<<<<')
+			time.sleep(10)
 		
 	def insert_data(self, Loggers, avalibleIps):
 		cur_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -223,12 +243,13 @@ class ipProxy():
 		Loggers.Info(u'>>>>>检查数据库ip结束<<<<<')
 		self.mysql.end()
 
-	def check_ip_schedule(self):
-		schedule.every(20).minutes.do(self.check_db_ip)
+	def check_ip_schedule(self, funcs):
 		while 1 == 1:
-			schedule.run_pending()
-			time.sleep(1)
-
+			for fun in funcs:
+				if not fun.isAlive():
+					fun.start()
+			self.check_db_ip()
+			time.sleep(60 * 20)
 
 if __name__ == '__main__':
 	ipProxys = ipProxy()
@@ -240,6 +261,6 @@ if __name__ == '__main__':
 		get_ip_from_66ip.start()
 		get_ip_from_ip3366.start()
 		get_ip_from_xici.start()
-		check_ip_schedule.start()
+		check_ip_schedule.start([get_ip_from_66ip, get_ip_from_ip3366, get_ip_from_xici])
 	except Exception,e:
 		ipProxys.Loggers.Error("ipProxy [ERROR] :" + str(e))
