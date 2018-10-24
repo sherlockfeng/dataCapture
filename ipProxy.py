@@ -254,7 +254,7 @@ class ipProxy():
 					Loggers.Info(u'>>>>>启动进程:' + str(fun.getName()) + '<<<<<')
 					fun.start()
 			self.check_db_ip(Loggers)
-			time.sleep(60 * 20)
+			time.sleep(60 * 10)
 
 if __name__ == '__main__':
 	ipProxys = ipProxy()
