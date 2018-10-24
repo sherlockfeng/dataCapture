@@ -217,8 +217,7 @@ class ipProxy():
 		Loggers.Info(u'>>>>> 插入数据结束 <<<<<')
 		self.mysql.end()
 	
-	def check_db_ip(self):
-		Loggers = Logger(special_log_file = 'checkDbIp')
+	def check_db_ip(self, Loggers):
 		Loggers.Info(u'>>>>>开始检查数据库中已有ip<<<<<')
 		sql_select = "SELECT * FROM " + self.cfg.get("DB", "DBNAME") +".ipProxy"
 		sql_update = "UPDATE " + self.cfg.get("DB", "DBNAME") + ".ipProxy SET power = (%s), update_time = (%s) WHERE ip = (%s)"
@@ -248,10 +247,13 @@ class ipProxy():
 
 	def check_ip_schedule(self, funcs):
 		while 1 == 1:
+			Loggers = Logger(special_log_file = 'checkDbIp')
+			Loggers.Info(u'>>>>>开始检查抓取ip的进程<<<<<')
 			for fun in funcs:
 				if not fun.isAlive():
+					Loggers.Info(u'>>>>>启动进程:' + str(fun.getName()) + '<<<<<')
 					fun.start()
-			self.check_db_ip()
+			self.check_db_ip(Loggers)
 			time.sleep(60 * 20)
 
 if __name__ == '__main__':
@@ -260,6 +262,9 @@ if __name__ == '__main__':
 		get_ip_from_66ip = threading.Thread(target=ipProxys.get_ip_from_66ip)
 		get_ip_from_ip3366 = threading.Thread(target=ipProxys.get_ip_from_ip3366)
 		get_ip_from_xici = threading.Thread(target=ipProxys.get_ip_from_xici)
+		get_ip_from_66ip.setName('66ip')
+		get_ip_from_ip3366.setName('ip3366')
+		get_ip_from_xici.setName('xici')
 		check_ip_schedule = threading.Thread(target=ipProxys.check_ip_schedule, args=([get_ip_from_66ip, get_ip_from_ip3366, get_ip_from_xici],))
 		check_ip_schedule.start()
 	except Exception,e:
