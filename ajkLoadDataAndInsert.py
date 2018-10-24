@@ -239,10 +239,10 @@ class ajkLoadDataAndInsert():
 
 if __name__ == '__main__':
 	loadData = ajkLoadDataAndInsert()
-	loadData.start()
-	# schedule.every().day.at('08:00').do(loadData.start)
-	# schedule.every().day.at('16:00').do(loadData.start)
-	# while 1 == 1:
-	# 	schedule.run_pending()
-	# 	time.sleep(1)
+	# loadData.start()
+	schedule.every().day.at('08:00').do(loadData.start)
+	schedule.every().day.at('16:00').do(loadData.start)
+	while 1 == 1:
+		schedule.run_pending()
+		time.sleep(1)
 
