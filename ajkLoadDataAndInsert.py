@@ -93,7 +93,7 @@ class ajkLoadDataAndInsert():
 										self.ip = result_ip['active_ip']
 										self.ips = result_ip['ips']
 							oneCityGetDown = False
-							self.Logger.Info(u'>>>>> ========== city:' + city['city_name'] + u'抓取完成 ========== <<<<<')
+							self.Logger.Info(u'>>>>> ========== city:' + city['city_name'] + u'第' + str(int(page) + 1) + u'页' + u'抓取完成 ========== <<<<<')
 						else:
 							self.Logger.Info(u'>>>>> ip:' + str(self.ip['ip']) + u'不可用|' + title + '<<<<<')
 							result_ip = self.utils.get_active_ip(self.ips, self.ip, self.Logger, self.PROXYNAME, self.mysql)
