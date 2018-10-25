@@ -217,47 +217,49 @@ class ipProxy():
 		Loggers.Info(u'>>>>> 插入数据结束 <<<<<')
 		self.mysql.end()
 	
-	def check_db_ip(self, Loggers):
-		Loggers.Info(u'>>>>>开始检查数据库中已有ip<<<<<')
-		sql_select = "SELECT * FROM " + self.cfg.get("DB", "DBNAME") +".ipProxy"
-		sql_update = "UPDATE " + self.cfg.get("DB", "DBNAME") + ".ipProxy SET power = (%s), update_time = (%s) WHERE ip = (%s)"
-		sql_delete = "DELETE FROM " + self.cfg.get("DB", "DBNAME") + ".ipProxy WHERE ip = (%s)"
-		cur_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-		try:
-			ipsFromDb = self.mysql.getMany(sql_select, 1000)
-			if ipsFromDb:
-				for item in ipsFromDb:
-					result = self.utils.checkIpForAJK(item['ip'])
-					power = int(item['power'])
-					if result and result['move'] == 'add':
-						powerNew = power + 1
-						Loggers.Info(u'>>>>>更新ip:' + item['ip'] + '-power从' + str(power) + '更新至' + str(powerNew)+ '<<<<<')
-						self.mysql.update(sql_update, (str(powerNew), cur_time, item['ip']))
-					elif result and result['move'] == 'minus'and power > 1:
-						powerNew = power - 1
-						Loggers.Info(u'>>>>>更新ip:' + item['ip'] + '-power从' + str(power) + '更新至' + str(powerNew)+ '<<<<<')
-						self.mysql.update(sql_update, (str(powerNew), cur_time, item['ip']))
-					else:
-						Loggers.Info(u'>>>>>删除ip:' + item['ip'] + '<<<<<')
-						self.mysql.delete(sql_delete, (item['ip']))
-					self.mysql.end()
-		except BaseException, e:
-			Loggers.Error('>>>>> check_db_ip ' + u'出错' + e.message + '<<<<<')
-		Loggers.Info(u'>>>>>检查数据库ip结束<<<<<')
+	def check_db_ip(self):
+		Loggers = Logger(special_log_file = 'checkDbIp')
+		while 1 == 1:
+			Loggers.Info(u'>>>>>开始检查数据库中已有ip<<<<<')
+			sql_select = "SELECT * FROM " + self.cfg.get("DB", "DBNAME") +".ipProxy"
+			sql_update = "UPDATE " + self.cfg.get("DB", "DBNAME") + ".ipProxy SET power = (%s), update_time = (%s) WHERE ip = (%s)"
+			sql_delete = "DELETE FROM " + self.cfg.get("DB", "DBNAME") + ".ipProxy WHERE ip = (%s)"
+			cur_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+			try:
+				ipsFromDb = self.mysql.getMany(sql_select, 1000)
+				if ipsFromDb:
+					for item in ipsFromDb:
+						result = self.utils.checkIpForAJK(item['ip'])
+						power = int(item['power'])
+						if result and result['move'] == 'add':
+							powerNew = power + 1
+							Loggers.Info(u'>>>>>更新ip:' + item['ip'] + '-power从' + str(power) + '更新至' + str(powerNew)+ '<<<<<')
+							self.mysql.update(sql_update, (str(powerNew), cur_time, item['ip']))
+						elif result and result['move'] == 'minus'and power > 1:
+							powerNew = power - 1
+							Loggers.Info(u'>>>>>更新ip:' + item['ip'] + '-power从' + str(power) + '更新至' + str(powerNew)+ '<<<<<')
+							self.mysql.update(sql_update, (str(powerNew), cur_time, item['ip']))
+						else:
+							Loggers.Info(u'>>>>>删除ip:' + item['ip'] + '<<<<<')
+							self.mysql.delete(sql_delete, (item['ip']))
+						self.mysql.end()
+			except BaseException, e:
+				Loggers.Error('>>>>> check_db_ip ' + u'出错' + e.message + '<<<<<')
+			Loggers.Info(u'>>>>>检查数据库ip结束<<<<<')
+			time.sleep(60 * 10)
 
-	def check_ip_schedule(self, funcs):
+	def check_all_thread(self, funcs):
 		while 1 == 1:
 			try:
-				Loggers = Logger(special_log_file = 'checkDbIp')
-				Loggers.Info(u'>>>>>开始检查抓取ip的进程<<<<<')
+				Loggers = Logger(special_log_file = 'checkAllThread')
+				Loggers.Info(u'>>>>>开始检查所有线程<<<<<')
 				for fun in funcs:
 					if not fun.isAlive():
 						Loggers.Info(u'>>>>>启动进程:' + str(fun.getName()) + '<<<<<')
 						fun.start()
-				self.check_db_ip(Loggers)
-				time.sleep(60 * 10)
+				time.sleep(60 * 60)
 			except BaseException, e:
-				Loggers.Error('>>>>> check_ip_schedule ' + u'出错' + e.message + '<<<<<')
+				Loggers.Error('>>>>> check_all_thread ' + u'出错' + e.message + '<<<<<')
 
 if __name__ == '__main__':
 	ipProxys = ipProxy()
@@ -265,10 +267,12 @@ if __name__ == '__main__':
 		get_ip_from_66ip = threading.Thread(target=ipProxys.get_ip_from_66ip)
 		get_ip_from_ip3366 = threading.Thread(target=ipProxys.get_ip_from_ip3366)
 		get_ip_from_xici = threading.Thread(target=ipProxys.get_ip_from_xici)
+		check_db_ip = threading.Thread(target=ipProxys.check_db_ip)
 		get_ip_from_66ip.setName('66ip')
 		get_ip_from_ip3366.setName('ip3366')
 		get_ip_from_xici.setName('xici')
-		check_ip_schedule = threading.Thread(target=ipProxys.check_ip_schedule, args=([get_ip_from_66ip, get_ip_from_ip3366, get_ip_from_xici],))
-		check_ip_schedule.start()
+		check_db_ip.setName('checkDbIp')
+		check_all_thread = threading.Thread(target=ipProxys.check_all_thread, args=([get_ip_from_66ip, get_ip_from_ip3366, get_ip_from_xici, check_db_ip],))
+		check_all_thread.start()
 	except Exception,e:
 		ipProxys.Loggers.Error("ipProxy [ERROR] :" + str(e))
