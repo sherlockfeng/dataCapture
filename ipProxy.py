@@ -240,21 +240,24 @@ class ipProxy():
 					else:
 						Loggers.Info(u'>>>>>删除ip:' + item['ip'] + '<<<<<')
 						self.mysql.delete(sql_delete, (item['ip']))
+					self.mysql.end()
 		except BaseException, e:
 			Loggers.Error('>>>>> check_db_ip ' + u'出错' + e.message + '<<<<<')
 		Loggers.Info(u'>>>>>检查数据库ip结束<<<<<')
-		self.mysql.end()
 
 	def check_ip_schedule(self, funcs):
 		while 1 == 1:
-			Loggers = Logger(special_log_file = 'checkDbIp')
-			Loggers.Info(u'>>>>>开始检查抓取ip的进程<<<<<')
-			for fun in funcs:
-				if not fun.isAlive():
-					Loggers.Info(u'>>>>>启动进程:' + str(fun.getName()) + '<<<<<')
-					fun.start()
-			self.check_db_ip(Loggers)
-			time.sleep(60 * 10)
+			try:
+				Loggers = Logger(special_log_file = 'checkDbIp')
+				Loggers.Info(u'>>>>>开始检查抓取ip的进程<<<<<')
+				for fun in funcs:
+					if not fun.isAlive():
+						Loggers.Info(u'>>>>>启动进程:' + str(fun.getName()) + '<<<<<')
+						fun.start()
+				self.check_db_ip(Loggers)
+				time.sleep(60 * 10)
+			except BaseException, e:
+				Loggers.Error('>>>>> check_ip_schedule ' + u'出错' + e.message + '<<<<<')
 
 if __name__ == '__main__':
 	ipProxys = ipProxy()
