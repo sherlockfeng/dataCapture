@@ -135,7 +135,7 @@ class ajkLoadDataAndInsert():
 				self.Logger.Info('uni_price')
 
 			if detail_info.find('div', text='房屋户型：'):
-				detail_dict['house_type'] = detail_info.find('div', text='房屋户型：').find_next('div').get_text().strip()
+				detail_dict['house_type'] = detail_info.find('div', text='房屋户型：').find_next('div').get_text().strip().replace('\t', '').replace('\n', '').replace('\r', '')
 				self.Logger.Info('house_type')
 
 			if detail_info.find('div', text='所在楼层：'):
@@ -147,7 +147,7 @@ class ajkLoadDataAndInsert():
 				self.Logger.Info('build_time')
 
 			if detail_info.find('div', text='所在位置：'):
-				detail_dict['address'] = detail_info.find('div', text='所在位置：').find_next('div').get_text().strip()
+				detail_dict['address'] = detail_info.find('div', text='所在位置：').find_next('div').get_text().strip().replace('\t', '').replace('\n', '').replace('\r', '')
 				self.Logger.Info('address')
 
 			if detail_info.find('div', text='所属小区：'):
@@ -239,9 +239,9 @@ class ajkLoadDataAndInsert():
 
 if __name__ == '__main__':
 	loadData = ajkLoadDataAndInsert()
-	# loadData.start()
-	schedule.every().day.at('08:00').do(loadData.start)
-	schedule.every().day.at('16:00').do(loadData.start)
+	loadData.start()
+	# schedule.every().day.at('08:00').do(loadData.start)
+	# schedule.every().day.at('16:00').do(loadData.start)
 	while 1 == 1:
 		schedule.run_pending()
 		time.sleep(1)
