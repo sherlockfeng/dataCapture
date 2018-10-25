@@ -252,14 +252,17 @@ class ipProxy():
 		while 1 == 1:
 			try:
 				Loggers = Logger(special_log_file = 'checkAllThread')
-				Loggers.Info(u'>>>>>开始检查所有线程<<<<<')
+				Loggers.Info(u'>>>>> 开始检查所有线程 <<<<<')
 				for fun in funcs:
+					Loggers.Info(u'>>>>> 检查' + str(fun.getName()) + '线程 <<<<<')
 					if not fun.isAlive():
-						Loggers.Info(u'>>>>>启动进程:' + str(fun.getName()) + '<<<<<')
+						Loggers.Info(u'>>>>> ' + str(fun.getName()) + '线程停止，重新启动 <<<<<')
 						fun.start()
+					else:
+						Loggers.Info(u'>>>>> ' + str(fun.getName()) + '线程运行中 <<<<<')
 				time.sleep(60 * 60)
 			except BaseException, e:
-				Loggers.Error('>>>>> check_all_thread ' + u'出错' + e.message + '<<<<<')
+				Loggers.Error('>>>>> check_all_thread ' + u'出错' + e.message + ' <<<<<')
 
 if __name__ == '__main__':
 	ipProxys = ipProxy()
