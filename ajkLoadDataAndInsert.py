@@ -82,7 +82,7 @@ class ajkLoadDataAndInsert():
 												self.insert_update_data(detail_dict)
 											except BaseException,e:
 												self.Logger.Info(u'>>>>> 从列表页获取详情中需要的数据出错' + str(e) + '<<<<<')
-										elseif '可能被删除' in title_detail:
+										elif '可能被删除' in title_detail:
                       self.Logger.Info(u'>>>>> 该链接失效' + title_detail + '<<<<<')
   										oneDetailGetDown = False
 										else:
