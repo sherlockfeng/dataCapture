@@ -221,14 +221,19 @@ class ipProxy():
 		Loggers = Logger(special_log_file = 'checkDbIp')
 		while 1 == 1:
 			Loggers.Info(u'>>>>>开始检查数据库中已有ip<<<<<')
-			sql_select = "SELECT * FROM " + self.cfg.get("DB", "DBNAME") +".ipProxy"
+			sql_select = "SELECT * FROM " + self.cfg.get("DB", "DBNAME") +".ipProxy LIMIT 1000"
 			sql_update = "UPDATE " + self.cfg.get("DB", "DBNAME") + ".ipProxy SET power = (%s), update_time = (%s) WHERE ip = (%s)"
 			sql_delete = "DELETE FROM " + self.cfg.get("DB", "DBNAME") + ".ipProxy WHERE ip = (%s)"
 			cur_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 			try:
-				ipsFromDb = self.mysql.getMany(sql_select, 1000)
+				try:
+					ipsFromDb = self.mysql.getMany(sql_select, 1000)
+				except BaseException, e:
+					Loggers.Error(u'>>>>>从数据取出所有ip出错' + e.message + '<<<<<')	
+				Loggers.Info(u'>>>>>取出所有ip<<<<<')
 				if ipsFromDb:
 					for item in ipsFromDb:
+						Loggers.Info(u'>>>>>检查'+str(item['ip'])+'|'+str(item['power'])+'<<<<<')
 						result = self.utils.checkIpForAJK(item['ip'])
 						power = int(item['power'])
 						if result and result['move'] == 'add':
