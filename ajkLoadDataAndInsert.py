@@ -67,7 +67,7 @@ class ajkLoadDataAndInsert():
 										time.sleep(random.random() * 20)
 										soup_detail = BeautifulSoup(r_detail .text, "html.parser")
 										title_detail = soup_detail.find('title').get_text()
-										if '58安居客' in title_detail and '验证' not in title_detail:
+										if '58安居客' in title_detail and '访问验证' not in title_detail:
 											try:
 												self.Logger.Info(u'>>>>> 开始从列表页获取详情中需要的数据|'+ title_detail+'<<<<<')
 												detail_dict = self.get_data(soup_detail)
