@@ -63,17 +63,17 @@ class Mysql(object):
         @param param: 可选参数，条件列表值（元组/列表） 
         @return: result list/boolean 查询到的结果集 
         """  
-        if param is None:  
-            count = self._cursor.execute(sql)  
-        else:  
-            count = self._cursor.execute(sql,param)  
-        if count>0:  
-            result = self._cursor.fetchmany(num)  
-        else:  
-            result = False  
-        return result  
+        if param is None:
+            count = self._cursor.execute(sql)
+        else:
+            count = self._cursor.execute(sql,param)
+        if count>0:
+            result = self._cursor.fetchmany(num)
+        else:
+            result = False
+        return result
    
-    def insertOne(self,sql,value):  
+    def insertOne(self,sql,value):
         """ 
         @summary: 向数据表插入一条记录 
         @param sql:要插入的ＳＱＬ格式 

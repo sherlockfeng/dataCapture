@@ -218,6 +218,7 @@ class ipProxy():
 		self.mysql.end()
 	
 	def check_db_ip(self):
+		mysql = Mysql(self.cfg.get('DB', 'DBHOST'), int(self.cfg.get('DB', 'DBPORT')), self.cfg.get('DB', 'DBUSER'), self.cfg.get('DB', 'DBPWD'), 3, 5)
 		Loggers = Logger(special_log_file = 'checkDbIp')
 		while 1 == 1:
 			Loggers.Info(u'>>>>>开始检查数据库中已有ip<<<<<')
@@ -227,7 +228,7 @@ class ipProxy():
 			cur_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 			try:
 				try:
-					ipsFromDb = self.mysql.getMany(sql_select, 1000)
+					ipsFromDb = mysql.getMany(sql_select, 1000)
 				except BaseException, e:
 					Loggers.Error(u'>>>>>从数据取出所有ip出错' + e.message + '<<<<<')	
 				Loggers.Info(u'>>>>>取出所有ip<<<<<')
@@ -239,15 +240,15 @@ class ipProxy():
 						if result and result['move'] == 'add':
 							powerNew = power + 1
 							Loggers.Info(u'>>>>>更新ip:' + item['ip'] + '-power从' + str(power) + '更新至' + str(powerNew)+ '<<<<<')
-							self.mysql.update(sql_update, (str(powerNew), cur_time, item['ip']))
+							mysql.update(sql_update, (str(powerNew), cur_time, item['ip']))
 						elif result and result['move'] == 'minus'and power > 1:
 							powerNew = power - 1
 							Loggers.Info(u'>>>>>更新ip:' + item['ip'] + '-power从' + str(power) + '更新至' + str(powerNew)+ '<<<<<')
-							self.mysql.update(sql_update, (str(powerNew), cur_time, item['ip']))
+							mysql.update(sql_update, (str(powerNew), cur_time, item['ip']))
 						else:
 							Loggers.Info(u'>>>>>删除ip:' + item['ip'] + '<<<<<')
-							self.mysql.delete(sql_delete, (item['ip']))
-						self.mysql.end()
+							mysql.delete(sql_delete, (item['ip']))
+						mysql.end()
 			except BaseException, e:
 				Loggers.Error('>>>>> check_db_ip ' + u'出错' + e.message + '<<<<<')
 			Loggers.Info(u'>>>>>检查数据库ip结束<<<<<')
